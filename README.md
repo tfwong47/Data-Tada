@@ -16,7 +16,7 @@ An intelligent web application that helps users discover and explore Australian 
 - **⚡ Fast Performance**: Optimized for quick responses
 - **🎯 View Modes**: Toggle between grid and list views for datasets
 - **🔊 Voice Search**: Hands-free voice input with automatic AI search
-- **♿ WCAG 2.1 AA Compliant**: Full accessibility support
+
 - **📱 Responsive Design**: Works perfectly on all devices
 
 ## 🏗️ Architecture
@@ -26,7 +26,7 @@ An intelligent web application that helps users discover and explore Australian 
 - **AI Engine**: Local LLM using llama-cpp-python
 - **Data**: JSON-based dataset storage
 - **Styling**: Custom CSS with modern design principles
-- **Accessibility**: WCAG 2.1 AA compliant design system
+
 - **Voice Recognition**: Web Speech API integration
 - **Responsive Layout**: CSS Grid and Flexbox for modern layouts
 
@@ -281,7 +281,7 @@ export FLASK_RUN_PORT=5000
 ### Version 2.0 - Enhanced User Experience
 - **🎯 View Toggle**: Grid and list view modes for datasets
 - **🔊 Voice Search**: Hands-free voice input with auto-search
-- **♿ Accessibility**: Full WCAG 2.1 AA compliance
+
 - **🎨 UI Redesign**: Modern, professional interface
 - **📱 Responsive**: Optimized for all screen sizes
 - **🎨 High Contrast**: Enhanced text visibility and readability
@@ -298,16 +298,16 @@ export FLASK_RUN_PORT=5000
 
 ### Project Purpose
 This project serves as a **demonstration and learning tool** showcasing:
-- **Modern Web Development**: Flask, responsive design, and accessibility
+- **Modern Web Development**: Flask and responsive design
 - **AI Integration**: Local language models and natural language processing
-- **Best Practices**: WCAG compliance, responsive design, and modern UI/UX
+- **Best Practices**: Responsive design and modern UI/UX
 - **Development Workflow**: AI-assisted development and rapid prototyping
 
 ### AI-Assisted Development
 This project demonstrates the power of **AI-assisted development**:
 - **Rapid Prototyping**: AI tools enabled quick iteration and testing
 - **Best Practices**: AI guidance ensured modern development standards
-- **Accessibility**: AI assistance helped implement WCAG compliance
+
 - **Code Quality**: AI suggestions improved code structure and readability
 - **User Experience**: AI insights enhanced UI/UX design decisions
 
