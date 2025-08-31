@@ -4,3 +4,4 @@ python-dotenv==1.0.0
 Werkzeug==2.3.7
 requests==2.31.0
 llama-cpp-python>=0.3.0
+scrapy==2.13.3
