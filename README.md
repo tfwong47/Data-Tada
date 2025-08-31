@@ -1,6 +1,6 @@
 # 🚀 Australia Open Data Discovery Hub
 
-An intelligent web application that helps users discover and explore Australian open datasets using natural language AI search. Built with Flask and powered by local AI models.
+An intelligent web application that helps users discover and explore Australian open datasets using natural language AI search. Built with Flask and powered by local AI models. https://youtu.be/UeZW2ft1hg4
 
 > **⚠️ Important Disclaimer**: This project is created for **showcase and demonstration purposes only**. The AI-generated responses and dataset information may not be accurate, complete, or up-to-date. This is not intended for production use or as a reliable source of government data.
 
