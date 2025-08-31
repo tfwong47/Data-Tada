@@ -36,6 +36,7 @@ An intelligent web application that helps users discover and explore Australian 
 - macOS/Linux/Windows
 - At least 2GB free RAM
 - 2GB+ free disk space for the AI model
+- Python scrapy
 
 ## 🚀 Quick Start
 
@@ -215,6 +216,18 @@ GovHack/
 - Use filters for topic, owner, year
 - Browse all datasets
 - View detailed dataset information
+
+### Web Scraping with Sitemap
+```bash
+python run_from_sitemap.py https://example/sitemap.xml --item-limit 100 --page-limit 50 --output datasets.json
+```
+
+**Parameters:**
+- `--item-limit`: Number of output entries to generate
+- `--page-limit`: Number of websites to web scrape
+- `--output`: Output file name (should be datasets.json)
+
+**Note:** The `api_links.txt` file contains all the API URLs to be used for data extraction.
 
 ## 🛠️ Development
 
