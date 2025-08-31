@@ -1,0 +1,6 @@
+https://data.gov.au/data/api/3/action/package_search?fq=organization:%22departmentofeducationskillsemployment%22&rows=1000&start=0
+https://data.gov.au/api/3/action/package_search?fq=organization:australianbureauofstatistics&rows=1000 
+https://data.gov.au/api/3/action/package_search?fq=organization:australiantaxationoffice&rows=1000 
+https://data.gov.au/api/3/action/package_search?fq=organization:department-of-education-victoria-government&rows=1000 
+https://data.gov.au/api/3/action/package_search?fq=organization:departmentofeducationskillsemployment&rows=1000 
+https://data.gov.au/api/3/action/package_search?fq=organization:department-of-education-western-australia-government&rows=1000 

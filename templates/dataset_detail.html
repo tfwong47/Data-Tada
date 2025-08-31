@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+
+{% block title %}{{ dataset.title }} - Dataset Details{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- Dataset Header -->
+            <div class="mb-4">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/">Home</a></li>
+                        <li class="breadcrumb-item"><a href="/#datasets">Datasets</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Dataset {{ dataset.id }}</li>
+                    </ol>
+                </nav>
+                
+                <h1 class="display-5 fw-bold mb-3">{{ dataset.title }}</h1>
+                <p class="lead text-muted">{{ dataset.description }}</p>
+            </div>
+            
+            <!-- Dataset Metadata -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Dataset Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <dl class="row">
+                                <dt class="col-sm-4">Dataset ID:</dt>
+                                <dd class="col-sm-8">
+                                    <span class="badge bg-primary">{{ dataset.id }}</span>
+                                </dd>
+                                
+                                <dt class="col-sm-4">Data Owner:</dt>
+                                <dd class="col-sm-8">{{ dataset.owner }}</dd>
+                                
+                                <dt class="col-sm-4">Topic:</dt>
+                                <dd class="col-sm-8">
+                                    <span class="badge bg-info">{{ dataset.topic }}</span>
+                                </dd>
+                                
+                                <dt class="col-sm-4">Data Type:</dt>
+                                <dd class="col-sm-8">
+                                    <span class="badge bg-success">{{ dataset.data_type if dataset.data_type else 'Unknown' }}</span>
+                                </dd>
+                            </dl>
+                        </div>
+                        <div class="col-md-6">
+                            <dl class="row">
+                                <dt class="col-sm-4">Year:</dt>
+                                <dd class="col-sm-8">
+                                    <span class="badge bg-warning">{{ dataset.year }}</span>
+                                </dd>
+                                
+                                <dt class="col-sm-4">License:</dt>
+                                <dd class="col-sm-8">{{ dataset.license }}</dd>
+                                
+                                <dt class="col-sm-4">Coverage:</dt>
+                                <dd class="col-sm-8">{{ dataset.coverage }}</dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Sample Preview -->
+            {% if dataset.sample_preview %}
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Sample Data Preview</h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted mb-3">This dataset includes the following data fields:</p>
+                    <div class="bg-light p-3 rounded">
+                        <code>{{ dataset.sample_preview }}</code>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- Source Link -->
+            {% if dataset.source_url %}
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Data Source</h5>
+                </div>
+                <div class="card-body">
+                    <p>Access the original dataset from the official source:</p>
+                    <a href="{{ dataset.source_url }}" target="_blank" class="btn btn-primary">
+                        <i class="bi bi-box-arrow-up-right me-2"></i>
+                        Visit Source Website
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- AI Assistant Card -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="bi bi-robot me-2"></i>
+                        Need Help?
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted small mb-3">
+                        Ask our AI assistant about this dataset or find related data.
+                    </p>
+                    <button class="btn btn-outline-primary w-100" onclick="toggleChat()">
+                        <i class="bi bi-chat-dots me-2"></i>
+                        Ask AI Assistant
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Related Datasets -->
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="bi bi-collection me-2"></i>
+                        Explore More Data
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted small mb-3">
+                        Discover other datasets in our collection.
+                    </p>
+                    <a href="/#datasets" class="btn btn-outline-secondary w-100">
+                        <i class="bi bi-search me-2"></i>
+                        Browse All Datasets
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

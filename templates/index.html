@@ -1,0 +1,1427 @@
+{% extends "base.html" %}
+
+{% block title %}Australia Open Data Discovery Hub - AI-Powered Dataset Discovery{% endblock %}
+
+{% block content %}
+<!-- Skip to main content link for screen readers -->
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<!-- Hero Section -->
+<section class="hero-section" aria-labelledby="hero-heading">
+    <div class="hero-background">
+        <div class="hero-pattern"></div>
+        <div class="hero-overlay"></div>
+    </div>
+    
+    <div class="container">
+        <div class="hero-content">
+            <header class="hero-header">
+                <img src="{{ url_for('static', filename='images/logo.gif') }}" alt="Official Government Data Logo" class="hero-logo">
+                
+                <h1 id="hero-heading" class="hero-title">
+                    <span class="title-line">Discover Australian</span>
+                    <span class="title-line highlight">Open Data</span>
+                    <span class="title-line">with AI</span>
+                </h1>
+                
+                <p class="hero-description">
+                    Explore thousands of government datasets with the power of artificial intelligence. 
+                    Ask questions in natural language and find the data you need instantly.
+                </p>
+                
+                <div class="hero-stats">
+                    <div class="stat-item">
+                        <span class="stat-number">1,398+</span>
+                        <span class="stat-label">Datasets</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">50+</span>
+                        <span class="stat-label">Departments</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">24/7</span>
+                        <span class="stat-label">AI Assistant</span>
+                    </div>
+                </div>
+            </header>
+            
+            <!-- AI Search Section -->
+            <div class="ai-search-section" role="search" aria-labelledby="search-heading">
+                <h2 id="search-heading" class="visually-hidden">AI Search</h2>
+                
+                <form class="ai-search-form" role="search" aria-label="AI-powered dataset search" onsubmit="handleAISearch(event)">
+                    <div class="search-input-group">
+                        <div class="search-input-wrapper">
+                            <i class="bi bi-search search-icon" aria-hidden="true"></i>
+                            <input 
+                                type="text" 
+                                id="heroSearch" 
+                                name="search"
+                                class="search-input" 
+                                placeholder="Ask me anything about Australian data..." 
+                                aria-describedby="search-help"
+                                required
+                                onkeypress="handleSearchKeyPress(event)"
+                            >
+                        </div>
+                        
+                        <div class="search-buttons">
+                            <button 
+                                type="submit" 
+                                class="search-button primary-button"
+                                aria-label="Search datasets using AI"
+                            >
+                                <i class="bi bi-robot" aria-hidden="true"></i>
+                                <span>AI Search</span>
+                            </button>
+                            
+                            <button 
+                                type="button" 
+                                class="voice-button secondary-button"
+                                id="voiceSearchBtn"
+                                onclick="startVoiceSearch()"
+                                aria-label="Use voice input for search"
+                                aria-pressed="false"
+                            >
+                                <i class="bi bi-mic" aria-hidden="true"></i>
+                                <span>Voice</span>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div id="search-help" class="search-help">
+                        <i class="bi bi-lightbulb" aria-hidden="true"></i>
+                        <p>Type your question in natural language, or use voice search for hands-free operation. Voice search will automatically start AI search after you finish speaking.</p>
+                    </div>
+                </form>
+                
+                <!-- Voice Status -->
+                <div id="voiceStatus" class="voice-status" role="status" aria-live="polite" style="display: none;">
+                    <span id="voiceStatusText"></span>
+                </div>
+                
+                <!-- Search Examples -->
+                <div class="search-examples" aria-labelledby="examples-heading">
+                    <h3 id="examples-heading" class="examples-title">
+                        <i class="bi bi-lightning" aria-hidden="true"></i>
+                        Quick Start Examples
+                    </h3>
+                    <div class="examples-grid">
+                        <button 
+                            type="button" 
+                            class="example-button"
+                            onclick="fillSearchInput('Find school locations and enrollment data for Victoria')"
+                            aria-label="Search for school locations and enrollment data"
+                        >
+                            <span class="example-icon" aria-hidden="true">🏫</span>
+                            <span class="example-text">School locations & enrollment data</span>
+                        </button>
+                        <button 
+                            type="button" 
+                            class="example-button"
+                            onclick="fillSearchInput('Show me population migration statistics by state and territory')"
+                            aria-label="Search for population migration statistics"
+                        >
+                            <span class="example-icon" aria-hidden="true">📊</span>
+                            <span class="example-text">Population migration statistics</span>
+                        </button>
+                        <button 
+                            type="button" 
+                            class="example-button"
+                            onclick="fillSearchInput('Get financial statements and budget data from education department')"
+                            aria-label="Search for financial statements and budget data"
+                        >
+                            <span class="example-icon" aria-hidden="true">💰</span>
+                            <span class="example-text">Financial statements & budget data</span>
+                        </button>
+                        <button 
+                            type="button" 
+                            class="example-button"
+                            onclick="fillSearchInput('Find building approvals and construction data by region')"
+                            aria-label="Search for building approvals and construction data"
+                        >
+                            <span class="example-icon" aria-hidden="true">🏗️</span>
+                            <span class="example-text">Building approvals & construction</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- AI Results Display -->
+            <div id="aiResults" class="ai-results" role="region" aria-labelledby="results-heading" style="display: none;">
+                <div class="results-container">
+                    <div class="results-header">
+                        <h2 id="results-heading" class="results-title">
+                            <i class="bi bi-robot" aria-hidden="true"></i>
+                            AI Search Results
+                        </h2>
+                        <button class="close-results" onclick="closeResults()" aria-label="Close results">
+                            <i class="bi bi-x-lg" aria-hidden="true"></i>
+                        </button>
+                    </div>
+                    <div class="results-content">
+                        <div id="aiResponse" class="ai-response"></div>
+                        <div id="relevantDatasets" class="relevant-datasets"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Main Content -->
+<main id="main-content" class="main-content">
+    <!-- Search and Filter Section -->
+    <section class="search-section" aria-labelledby="catalogue-heading">
+        <div class="container">
+            <header class="section-header">
+                <div class="section-header-content">
+                    <h2 id="catalogue-heading" class="section-title">
+                        <i class="bi bi-database" aria-hidden="true"></i>
+                        Dataset Catalogue
+                    </h2>
+                    <p class="section-description">Browse and filter through our comprehensive collection of Australian government datasets</p>
+                </div>
+                
+                <div class="section-actions">
+                    <div class="view-controls" role="group" aria-label="View mode selection">
+                        <button 
+                            type="button" 
+                            class="view-button active" 
+                            onclick="setViewMode('grid')"
+                            aria-pressed="true"
+                            aria-label="Grid view active"
+                        >
+                            <i class="bi bi-grid-3x3-gap" aria-hidden="true"></i>
+                            <span>Grid</span>
+                        </button>
+                        <button 
+                            type="button" 
+                            class="view-button" 
+                            onclick="setViewMode('list')"
+                            aria-pressed="false"
+                            aria-label="List view"
+                        >
+                            <i class="bi bi-list" aria-hidden="true"></i>
+                            <span>List</span>
+                        </button>
+                    </div>
+                </div>
+            </header>
+            
+            <!-- Search Filters -->
+            <div class="search-filters" role="search" aria-labelledby="filters-heading">
+                <h3 id="filters-heading" class="visually-hidden">Search and Filter Options</h3>
+                
+                <div class="filters-header">
+                    <h4>Refine Your Search</h4>
+                    <p>Use the filters below to narrow down your dataset search</p>
+                </div>
+                
+                <form class="filters-form" role="search" aria-label="Dataset search and filtering">
+                    <div class="filters-grid">
+                        <div class="filter-group primary-filter">
+                            <label for="searchInput" class="filter-label">
+                                <i class="bi bi-search" aria-hidden="true"></i>
+                                Search Datasets
+                            </label>
+                            <input 
+                                type="text" 
+                                class="filter-input" 
+                                id="searchInput" 
+                                placeholder="Enter keywords..." 
+                                aria-describedby="search-help-text"
+                                onkeyup="performSearch()"
+                            >
+                            <div id="search-help-text" class="help-text">Type keywords to search dataset titles and descriptions</div>
+                        </div>
+                        
+                        <div class="filter-group">
+                            <label for="ownerFilter" class="filter-label">
+                                <i class="bi bi-building" aria-hidden="true"></i>
+                                Data Owner
+                            </label>
+                            <select class="filter-select" id="ownerFilter" onchange="performSearch()" aria-describedby="owner-help">
+                                <option value="">All Owners</option>
+                                <option value="Australian Bureau of Statistics">Australian Bureau of Statistics</option>
+                                <option value="Department of Education and Early Childhood Development">DEECD</option>
+                                <option value="Department of Education">DET</option>
+                                <option value="Department of Education">DE</option>
+                                <option value="Department of Treasury and Finance">DTF</option>
+                                <option value="Department of Justice and Community Safety">Justice</option>
+                                <option value="Department of Jobs, Precincts and Regions">DJPR</option>
+                                <option value="Department of Families, Fairness and Housing">DFFH</option>
+                                <option value="Department of Transport">Transport</option>
+                                <option value="Department of Environment, Land, Water and Planning">DELWP</option>
+                                <option value="Department of Premier and Cabinet">DPC</option>
+                            </select>
+                            <div id="owner-help" class="help-text">Filter by government department or agency</div>
+                        </div>
+                        
+                        <div class="filter-group">
+                            <label for="topicFilter" class="filter-label">
+                                <i class="bi bi-tag" aria-hidden="true"></i>
+                                Topic
+                            </label>
+                            <select class="filter-select" id="topicFilter" onchange="performSearch()" aria-describedby="topic-help">
+                                <option value="">All Topics</option>
+                                <option value="Demographics">Demographics</option>
+                                <option value="Economy">Economy</option>
+                                <option value="Education">Education</option>
+                                <option value="General">General</option>
+                            </select>
+                            <div id="topic-help" class="help-text">Filter by dataset topic or category</div>
+                        </div>
+                        
+                        <div class="filter-group">
+                            <label for="dataTypeFilter" class="filter-label">
+                                <i class="bi bi-file-earmark" aria-hidden="true"></i>
+                                Data Type
+                            </label>
+                            <select class="filter-select" id="dataTypeFilter" onchange="performSearch()" aria-describedby="type-help">
+                                <option value="">All Types</option>
+                                <option value="CSV">CSV</option>
+                                <option value="XLSX">XLSX</option>
+                                <option value="JSON">JSON</option>
+                                <option value="XML">XML</option>
+                                <option value="PDF">PDF</option>
+                                <option value="API">API</option>
+                                <option value="Database">Database</option>
+                                <option value="Shapefile">Shapefile</option>
+                            </select>
+                            <div id="type-help" class="help-text">Filter by data format or file type</div>
+                        </div>
+                        
+                        <div class="filter-group">
+                            <label for="yearFilter" class="filter-label">
+                                <i class="bi bi-calendar" aria-hidden="true"></i>
+                                Year
+                            </label>
+                            <select class="filter-select" id="yearFilter" onchange="performSearch()" aria-describedby="year-help">
+                                <option value="">All Years</option>
+                                <option value="2024">2024</option>
+                                <option value="2023">2023</option>
+                                <option value="2022">2022</option>
+                                <option value="2021">2021</option>
+                                <option value="2020">2020</option>
+                                <option value="2019">2019</option>
+                                <option value="2018">2018</option>
+                                <option value="2017">2017</option>
+                                <option value="2016">2016</option>
+                                <option value="2015">2015</option>
+                                <option value="2014">2014</option>
+                                <option value="2013">2013</option>
+                                <option value="2012">2012</option>
+                                <option value="2011">2011</option>
+                                <option value="2010">2010</option>
+                                <option value="2009">2009</option>
+                                <option value="2008">2008</option>
+                                <option value="2007">2007</option>
+                                <option value="2006">2006</option>
+                                <option value="2005">2005</option>
+                                <option value="2004">2004</option>
+                                <option value="2003">2003</option>
+                                <option value="2002">2002</option>
+                                <option value="2001">2001</option>
+                                <option value="2000">2000</option>
+                            </select>
+                            <div id="year-help" class="help-text">Filter by dataset publication year</div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            
+            <!-- Results Summary -->
+            <div class="results-summary" aria-live="polite">
+                <div class="results-info">
+                    <div class="results-count">
+                        <i class="bi bi-database" aria-hidden="true"></i>
+                        <span>Showing <strong id="resultCount" aria-label="total datasets">1398</strong> datasets</span>
+                    </div>
+                    <div class="results-actions">
+                        <button class="clear-filters" onclick="clearFilters()" aria-label="Clear all filters">
+                            <i class="bi bi-x-circle" aria-hidden="true"></i>
+                            <span>Clear Filters</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Dataset Grid -->
+            <div class="dataset-container">
+                <div class="row" id="datasetGrid" role="list" aria-label="Dataset results">
+                    <!-- Datasets will be loaded here dynamically -->
+                </div>
+            </div>
+
+            <!-- Pagination -->
+            <nav id="pagination" class="pagination-nav" role="navigation" aria-label="Dataset pagination">
+                <!-- Pagination controls will be loaded here -->
+            </nav>
+
+            <!-- No Results Message -->
+            <div id="noResults" class="no-results-message" role="status" aria-live="polite" style="display: none;">
+                <div class="no-results-content">
+                    <i class="bi bi-search" aria-hidden="true"></i>
+                    <h3>No datasets found</h3>
+                    <p>Try adjusting your search criteria or filters.</p>
+                    <button class="clear-filters-btn" onclick="clearFilters()">Clear All Filters</button>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<!-- About Section -->
+<section class="about-section" id="about" aria-labelledby="about-heading">
+    <div class="container">
+        <header class="section-header">
+            <h2 id="about-heading" class="section-title">
+                <i class="bi bi-info-circle" aria-hidden="true"></i>
+                About This Platform
+            </h2>
+            <p class="section-description">We provide access to thousands of Australian government datasets through an intelligent AI-powered search system. Our platform makes it easy to discover, explore, and understand government data.</p>
+        </header>
+        
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="bi bi-robot" aria-hidden="true"></i>
+                </div>
+                <div class="feature-content">
+                    <h3>AI-Powered Search</h3>
+                    <p>Ask questions in natural language and get intelligent responses with relevant datasets.</p>
+                    <div class="feature-highlight">Natural Language Processing</div>
+                </div>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="bi bi-database" aria-hidden="true"></i>
+                </div>
+                <div class="feature-content">
+                    <h3>Comprehensive Data</h3>
+                    <p>Access thousands of datasets from various government departments and agencies.</p>
+                    <div class="feature-highlight">1,398+ Datasets Available</div>
+                </div>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="bi bi-search" aria-hidden="true"></i>
+                </div>
+                <div class="feature-content">
+                    <h3>Advanced Filtering</h3>
+                    <p>Filter datasets by owner, topic, year, and data type for precise results.</p>
+                    <div class="feature-highlight">Smart Search & Filters</div>
+                </div>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="bi bi-shield-check" aria-hidden="true"></i>
+                </div>
+                <div class="feature-content">
+                    <h3>Trusted Source</h3>
+                    <p>All data comes directly from official Australian government sources and departments.</p>
+                    <div class="feature-highlight">Government Verified</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="site-footer" role="contentinfo">
+    <div class="container">
+        <div class="footer-content">
+            <div class="footer-section">
+                <div class="footer-section-header">
+                    <i class="bi bi-award" aria-hidden="true"></i>
+                    <h3>Accessibility</h3>
+                </div>
+                <p>This website is designed to meet WCAG 2.1 AA standards for accessibility.</p>
+                <ul class="accessibility-features">
+                    <li><i class="bi bi-check-circle" aria-hidden="true"></i>High contrast ratios</li>
+                    <li><i class="bi bi-check-circle" aria-hidden="true"></i>Keyboard navigation support</li>
+                    <li><i class="bi bi-check-circle" aria-hidden="true"></i>Screen reader compatibility</li>
+                    <li><i class="bi bi-check-circle" aria-hidden="true"></i>Focus indicators</li>
+                </ul>
+            </div>
+            
+            <div class="footer-section">
+                <div class="footer-section-header">
+                    <i class="bi bi-envelope" aria-hidden="true"></i>
+                    <h3>Contact</h3>
+                </div>
+                <p>For accessibility issues or questions, please contact us.</p>
+                <a href="mailto:accessibility@example.com" class="footer-link">
+                    <i class="bi bi-envelope" aria-hidden="true"></i>
+                    accessibility@example.com
+                </a>
+            </div>
+            
+            <div class="footer-section">
+                <div class="footer-section-header">
+                    <i class="bi bi-link-45deg" aria-hidden="true"></i>
+                    <h3>Resources</h3>
+                </div>
+                <ul class="footer-links">
+                    <li><a href="#" class="footer-link"><i class="bi bi-shield" aria-hidden="true"></i>Privacy Policy</a></li>
+                    <li><a href="#" class="footer-link"><i class="bi bi-file-text" aria-hidden="true"></i>Terms of Service</a></li>
+                    <li><a href="#" class="footer-link"><i class="bi bi-universal-access" aria-hidden="true"></i>Accessibility Statement</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-section">
+                <div class="footer-section-header">
+                    <i class="bi bi-github" aria-hidden="true"></i>
+                    <h3>Open Source</h3>
+                </div>
+                <p>This platform is built with open source technologies and follows government data standards.</p>
+                <a href="#" class="footer-link">
+                    <i class="bi bi-code-slash" aria-hidden="true"></i>
+                    View Source Code
+                </a>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <div class="footer-bottom-content">
+                <p>&copy; 2024 Australia Open Data Discovery Hub. All rights reserved.</p>
+                <div class="footer-badges">
+                    <span class="badge">WCAG 2.1 AA Compliant</span>
+                    <span class="badge">Government Data</span>
+                    <span class="badge">Open Source</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function handleHeroSearch(event) {
+        if (event.key === 'Enter') {
+            performHeroSearch();
+        }
+    }
+    
+    function performHeroSearch() {
+        const query = document.getElementById('heroSearch').value;
+        if (query.trim()) {
+            // Show loading state
+            const btn = document.getElementById('aiSearchBtn');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="bi bi-hourglass-split me-2"></i>Searching...';
+            btn.disabled = true;
+            
+            // Perform AI search
+            performAISearch(query);
+        }
+    }
+    
+    function performAISearch(query) {
+        fetch('/chat', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ message: query })
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('AI Search Response:', data); // Debug logging
+            displayAIResults(data, query);
+            // Reset button
+            const btn = document.getElementById('aiSearchBtn');
+            btn.innerHTML = '<i class="bi bi-robot me-2"></i>AI Search';
+            btn.disabled = false;
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            // Reset button
+            const btn = document.getElementById('aiSearchBtn');
+            btn.innerHTML = '<i class="bi bi-robot me-2"></i>AI Search';
+            btn.disabled = false;
+        });
+    }
+    
+    function displayAIResults(data, query) {
+        console.log('Displaying AI Results:', data); // Debug logging
+        const aiResults = document.getElementById('aiResults');
+        const aiResponse = document.getElementById('aiResponse');
+        const relevantDatasets = document.getElementById('relevantDatasets');
+        
+        // Show AI results section
+        aiResults.style.display = 'block';
+        
+        // Display AI response
+        aiResponse.innerHTML = `
+            <div class="ai-analysis-card mb-4">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-gradient-info text-white py-3">
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-robot fs-4 me-3"></i>
+                            <div>
+                                <h6 class="mb-1 fw-bold">AI Analysis Results</h6>
+                                <small class="opacity-75">Query: "${query}"</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="ai-response-content">
+                            ${formatAIResponse(data.response)}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        // Display relevant datasets
+        console.log('Checking relevant datasets:', data.relevant_datasets); // Debug logging
+        if (data.relevant_datasets && data.relevant_datasets.length > 0) {
+            console.log(`Found ${data.relevant_datasets.length} relevant datasets`); // Debug logging
+            let datasetsHTML = `
+                <div class="datasets-header mb-5">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h4 class="text-primary mb-2">
+                                <i class="bi bi-database-fill me-3"></i>
+                                ${data.relevant_datasets.length} Relevant Datasets Found
+                            </h4>
+                            <p class="text-muted mb-0 fs-5">These datasets are most relevant to your query. Click on any dataset to view detailed information.</p>
+                        </div>
+                        <div class="col-md-4 text-md-end">
+                            <div class="search-summary">
+                                <span class="badge bg-success fs-6">Query: "${query}"</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="datasets-grid">
+            `;
+            
+            data.relevant_datasets.forEach((dataset, index) => {
+                console.log(`Processing dataset ${index}:`, dataset); // Debug logging
+                
+                // Truncate long titles and descriptions for better display
+                const title = dataset.title && dataset.title.length > 100 ? 
+                    dataset.title.substring(0, 100) + '...' : dataset.title || 'Untitled Dataset';
+                
+                const description = dataset.description && dataset.description.length > 200 ? 
+                    dataset.description.substring(0, 200) + '...' : dataset.description || 'No description available';
+                
+                // Format owner name for better display
+                const owner = dataset.owner && dataset.owner.length > 40 ? 
+                    dataset.owner.substring(0, 40) + '...' : dataset.owner || 'Unknown Owner';
+                
+                // Get topic icon based on topic
+                const topicIcon = getTopicIcon(dataset.topic);
+                
+                datasetsHTML += `
+                    <div class="dataset-item">
+                        <div class="dataset-card">
+                            <div class="dataset-header">
+                                <div class="dataset-title-section">
+                                    <div class="dataset-id-badge">
+                                        <span class="id-number">${dataset.id}</span>
+                                    </div>
+                                    <h5 class="dataset-title">${title}</h5>
+                                </div>
+                                <div class="dataset-year">
+                                    <span class="year-badge">${dataset.year || 'N/A'}</span>
+                                </div>
+                            </div>
+                            
+                            <div class="dataset-content">
+                                <div class="dataset-description">
+                                    <p>${description}</p>
+                                </div>
+                                
+                                <div class="dataset-info-grid">
+                                    <div class="info-item owner-info">
+                                        <div class="info-icon">
+                                            <i class="bi bi-building"></i>
+                                        </div>
+                                        <div class="info-content">
+                                            <label>Data Owner</label>
+                                            <span>${owner}</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="info-item topic-info">
+                                        <div class="info-icon">
+                                            <i class="bi bi-tag"></i>
+                                        </div>
+                                        <div class="info-content">
+                                            <label>Topic</label>
+                                            <span class="topic-badge">${dataset.topic || 'General'}</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="info-item format-info">
+                                        <div class="info-icon">
+                                            <i class="bi bi-file-earmark"></i>
+                                        </div>
+                                        <div class="info-content">
+                                            <label>Format</label>
+                                            <span class="format-badge">${dataset.data_type || 'Unknown'}</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="info-item icon-info">
+                                        <div class="topic-icon">
+                                            <i class="${topicIcon}"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="dataset-actions">
+                                <a href="/dataset/${dataset.id}" class="view-details-btn">
+                                    <i class="bi bi-arrow-right"></i>
+                                    <span>View Dataset Details</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            datasetsHTML += '</div>';
+            relevantDatasets.innerHTML = datasetsHTML;
+        } else {
+            relevantDatasets.innerHTML = `
+                <div class="no-results">
+                    <div class="no-results-icon">
+                        <i class="bi bi-search"></i>
+                    </div>
+                    <h5>No specific datasets found</h5>
+                    <p>Try rephrasing your question or use the filters below to browse available datasets.</p>
+                </div>
+            `;
+        }
+        
+        // Scroll to results
+        aiResults.scrollIntoView({ behavior: 'smooth' });
+    }
+    
+    // Load initial page when document is ready
+    document.addEventListener('DOMContentLoaded', function() {
+        // Load first page of datasets
+        performSearch(1);
+    });
+
+    // Global variables for pagination
+    let currentPage = 1;
+    let currentFilters = {
+        query: '',
+        owner: '',
+        topic: '',
+        year: '',
+        data_type: ''
+    };
+
+    function performSearch(page = 1) {
+        const query = document.getElementById('searchInput').value;
+        const owner = document.getElementById('ownerFilter').value;
+        const topic = document.getElementById('topicFilter').value;
+        const year = document.getElementById('yearFilter').value;
+        const dataType = document.getElementById('dataTypeFilter').value;
+        
+        // Update current filters
+        currentFilters = { query, owner, topic, year, data_type: dataType };
+        currentPage = page;
+        
+        const params = new URLSearchParams({
+            q: query,
+            owner: owner,
+            topic: topic,
+            year: year,
+            data_type: dataType,
+            page: page,
+            per_page: 20
+        });
+        
+        fetch(`/search?${params}`)
+            .then(response => response.json())
+            .then(data => {
+                console.log('Search response:', data);
+                
+                if (data.datasets && data.datasets.length > 0) {
+                    displayResults(data.datasets);
+                    displayPagination(data.pagination);
+                    updateResultCount(data.pagination);
+                    document.getElementById('noResults').style.display = 'none';
+                } else {
+                    document.getElementById('datasetGrid').innerHTML = '';
+                    document.getElementById('pagination').innerHTML = '';
+                    document.getElementById('noResults').style.display = 'block';
+                    updateResultCount({ total_datasets: 0, current_page: 1, total_pages: 0 });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('datasetGrid').innerHTML = '<div class="col-12"><div class="alert alert-danger">Error loading datasets</div></div>';
+            });
+    }
+
+    function displayResults(datasets) {
+        const grid = document.getElementById('datasetGrid');
+        grid.innerHTML = '';
+        
+        datasets.forEach(dataset => {
+            const card = document.createElement('div');
+            card.className = 'col-md-6 col-lg-4 mb-4 dataset-item';
+            card.innerHTML = `
+                <div class="card dataset-card h-100">
+                    <div class="card-header d-flex justify-content-between align-items-start">
+                        <h6 class="card-title mb-0">${dataset.title ? (dataset.title.length > 60 ? dataset.title.substring(0, 60) + '...' : dataset.title) : 'No Title'}</h6>
+                        <div class="d-flex gap-2">
+                            <span class="badge bg-primary badge-custom">${dataset.topic || 'Unknown'}</span>
+                            <span class="badge bg-info badge-custom">${dataset.data_type || 'Unknown'}</span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text text-muted">
+                            ${dataset.description ? (dataset.description.length > 120 ? dataset.description.substring(0, 120) + '...' : dataset.description) : 'No description available'}
+                        </p>
+                        <div class="mb-3">
+                            <span class="badge bg-secondary badge-custom me-1">${dataset.owner ? (dataset.owner.length > 20 ? dataset.owner.substring(0, 20) + '...' : dataset.owner) : 'Unknown'}</span>
+                            <span class="badge bg-warning badge-custom">${dataset.year || 'N/A'}</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <small class="text-muted fs-6">
+                                <strong>Format:</strong> ${dataset.data_type || 'Unknown'}
+                            </small>
+                            <a href="/dataset/${dataset.id}" class="btn btn-sm btn-outline-primary">
+                                View Details
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            `;
+            grid.appendChild(card);
+        });
+    }
+
+    function displayPagination(pagination) {
+        const paginationDiv = document.getElementById('pagination');
+        if (!pagination || pagination.total_pages <= 1) {
+            paginationDiv.innerHTML = '';
+            return;
+        }
+        
+        let paginationHTML = `
+            <div class="d-flex justify-content-between align-items-center mt-4">
+                <div class="pagination-info">
+                    <small class="text-muted">
+                        Showing ${pagination.start_idx} to ${pagination.end_idx} of ${pagination.total_datasets} datasets
+                    </small>
+                </div>
+                <nav aria-label="Dataset pagination">
+                    <ul class="pagination pagination-lg mb-0">
+        `;
+        
+        // Previous button
+        if (pagination.has_prev) {
+            paginationHTML += `
+                <li class="page-item">
+                    <button class="page-link" onclick="changePage(${pagination.current_page - 1})" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </button>
+                </li>
+            `;
+        }
+        
+        // Page numbers
+        const startPage = Math.max(1, pagination.current_page - 2);
+        const endPage = Math.min(pagination.total_pages, pagination.current_page + 2);
+        
+        for (let i = startPage; i <= endPage; i++) {
+            if (i === pagination.current_page) {
+                paginationHTML += `
+                    <li class="page-item active">
+                        <span class="page-link">${i}</span>
+                    </li>
+                `;
+            } else {
+                paginationHTML += `
+                    <li class="page-item">
+                        <button class="page-link" onclick="changePage(${i})">${i}</button>
+                    </li>
+                `;
+            }
+        }
+        
+        // Next button
+        if (pagination.has_next) {
+            paginationHTML += `
+                <li class="page-item">
+                    <button class="page-link" onclick="changePage(${pagination.current_page + 1})" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </button>
+                </li>
+            `;
+        }
+        
+        paginationHTML += `
+                    </ul>
+                </nav>
+            </div>
+        `;
+        
+        paginationDiv.innerHTML = paginationHTML;
+    }
+
+    function changePage(page) {
+        performSearch(page);
+        // Scroll to top of results
+        document.getElementById('datasetGrid').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function updateResultCount(pagination) {
+        const resultCount = document.getElementById('resultCount');
+        if (pagination.total_datasets === 0) {
+            resultCount.textContent = '0';
+        } else {
+            resultCount.textContent = `${pagination.start_idx}-${pagination.end_idx} of ${pagination.total_datasets}`;
+        }
+    }
+    
+    function setViewMode(mode) {
+        // Update button states
+        const buttons = document.querySelectorAll('.view-button');
+        buttons.forEach(btn => {
+            btn.classList.remove('active');
+            btn.setAttribute('aria-pressed', 'false');
+        });
+        event.target.classList.add('active');
+        event.target.setAttribute('aria-pressed', 'true');
+        
+        // Update dataset grid view
+        const grid = document.getElementById('datasetGrid');
+        if (mode === 'list') {
+            grid.classList.add('list-view');
+            grid.classList.remove('grid-view');
+        } else {
+            grid.classList.add('grid-view');
+            grid.classList.remove('list-view');
+        }
+        
+        // Store preference in localStorage
+        localStorage.setItem('viewMode', mode);
+    }
+    
+    // Voice search functionality
+    function startVoiceSearch() {
+        const voiceBtn = document.getElementById('voiceSearchBtn');
+        const searchInput = document.getElementById('heroSearch');
+        const voiceStatus = document.getElementById('voiceStatus');
+        const voiceStatusText = document.getElementById('voiceStatusText');
+        
+        // Check if speech recognition is supported
+        if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+            alert('Speech recognition is not supported in this browser. Please use Chrome or Edge.');
+            return;
+        }
+        
+        // Create speech recognition instance
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        const recognition = new SpeechRecognition();
+        
+        // Configure recognition settings
+        recognition.continuous = false;
+        recognition.interimResults = false;
+        recognition.lang = 'en-AU'; // Australian English
+        
+        // Show status and update button state
+        voiceStatus.style.display = 'block';
+        voiceStatusText.innerHTML = '<i class="bi bi-mic me-1"></i>Listening... Speak now!';
+        voiceStatus.className = 'mt-2 text-info';
+        
+        voiceBtn.innerHTML = '<i class="bi bi-mic-mute me-2"></i>Listening...';
+        voiceBtn.classList.remove('btn-outline-light');
+        voiceBtn.classList.add('btn-danger');
+        voiceBtn.disabled = true;
+        
+        // Start listening
+        recognition.start();
+        
+        // Handle results
+        recognition.onresult = function(event) {
+            const transcript = event.results[0][0].transcript;
+            console.log('Voice input:', transcript);
+            
+            // Update search input
+            searchInput.value = transcript;
+            
+            // Show success status
+            voiceStatusText.innerHTML = '<i class="bi bi-check-circle me-1"></i>Voice input received: "' + transcript + '"';
+            voiceStatus.className = 'mt-2 text-success';
+            
+            // Automatically perform AI search after a short delay
+            setTimeout(() => {
+                performHeroSearch();
+                // Hide status after search starts
+                setTimeout(() => {
+                    voiceStatus.style.display = 'none';
+                }, 2000);
+            }, 1000);
+            
+            // Reset button
+            resetVoiceButton();
+        };
+        
+        // Handle errors
+        recognition.onerror = function(event) {
+            console.error('Speech recognition error:', event.error);
+            
+            let errorMessage = 'Voice recognition error: ' + event.error;
+            if (event.error === 'no-speech') {
+                errorMessage = 'No speech detected. Please try again.';
+            } else if (event.error === 'audio-capture') {
+                errorMessage = 'Microphone not accessible. Please check permissions.';
+            } else if (event.error === 'not-allowed') {
+                errorMessage = 'Microphone access denied. Please allow microphone access.';
+            }
+            
+            voiceStatusText.innerHTML = '<i class="bi bi-exclamation-triangle me-1"></i>' + errorMessage;
+            voiceStatus.className = 'mt-2 text-danger';
+            
+            resetVoiceButton();
+        };
+        
+        // Handle end of recognition
+        recognition.onend = function() {
+            resetVoiceButton();
+        };
+        
+        // Reset button function
+        function resetVoiceButton() {
+            voiceBtn.innerHTML = '<i class="bi bi-mic me-2"></i>Voice Search';
+            voiceBtn.classList.remove('btn-danger');
+            voiceBtn.classList.add('btn-outline-light');
+            voiceBtn.disabled = false;
+        }
+    }
+
+    // Function to fill search input with example query
+    function fillSearchInput(query) {
+        const searchInput = document.getElementById('heroSearch');
+        searchInput.value = query;
+        performHeroSearch(); // Automatically perform search
+    }
+    
+    // Handle AI Search form submission
+    function handleAISearch(event) {
+        event.preventDefault(); // Prevent form from submitting and refreshing page
+        performHeroSearch();
+    }
+    
+    // Handle Enter key press in search input
+    function handleSearchKeyPress(event) {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            performHeroSearch();
+        }
+    }
+    
+    // AI Search functionality
+    function performHeroSearch() {
+        const query = document.getElementById('heroSearch').value.trim();
+        if (!query) return;
+
+        const aiResults = document.getElementById('aiResults');
+        const aiResponse = document.getElementById('aiResponse');
+        const relevantDatasets = document.getElementById('relevantDatasets');
+
+        // Show results container
+        aiResults.style.display = 'block';
+
+        // Show loading state
+        aiResponse.innerHTML = `
+            <div class="loading-state" role="status" aria-live="polite">
+                <div class="loading-spinner" aria-hidden="true"></div>
+                <p>AI is analyzing your query...</p>
+            </div>
+        `;
+
+        // Make API call
+        fetch('/chat', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ message: query })
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('AI response:', data);
+            
+            // Display AI response
+            aiResponse.innerHTML = `
+                <div class="ai-response-section">
+                    <h3>AI Analysis Results</h3>
+                    <p class="query-context">Query: "${query}"</p>
+                    <div class="ai-response-content">
+                        ${formatAIResponse(data.response)}
+                    </div>
+                </div>
+            `;
+
+            // Display relevant datasets
+            if (data.relevant_datasets && data.relevant_datasets.length > 0) {
+                let datasetsHTML = `
+                    <div class="datasets-section">
+                        <h3>${data.relevant_datasets.length} Relevant Datasets Found</h3>
+                        <p>These datasets are most relevant to your query. Click on any dataset to view detailed information.</p>
+                        <div class="datasets-grid">
+                `;
+                
+                data.relevant_datasets.forEach((dataset, index) => {
+                    const title = dataset.title && dataset.title.length > 100 ? 
+                        dataset.title.substring(0, 100) + '...' : dataset.title || 'Untitled Dataset';
+                    
+                    const description = dataset.description && dataset.description.length > 200 ? 
+                        dataset.description.substring(0, 200) + '...' : dataset.description || 'No description available';
+                    
+                    const owner = dataset.owner && dataset.owner.length > 40 ? 
+                        dataset.owner.substring(0, 40) + '...' : dataset.owner || 'Unknown Owner';
+                    
+                    const topicIcon = getTopicIcon(dataset.topic);
+                    
+                    datasetsHTML += `
+                        <article class="dataset-card" role="article">
+                            <header class="dataset-header">
+                                <div class="dataset-title-section">
+                                    <div class="dataset-id-badge">
+                                        <span class="id-number">Dataset ID: ${dataset.id}</span>
+                                    </div>
+                                    <h4 class="dataset-title">${title}</h4>
+                                </div>
+                                <div class="dataset-year">
+                                    <span class="year-badge">Year: ${dataset.year || 'N/A'}</span>
+                                </div>
+                            </header>
+                            
+                            <div class="dataset-content">
+                                <div class="dataset-description">
+                                    <p>${description}</p>
+                                </div>
+                                
+                                <div class="dataset-info-grid">
+                                    <div class="info-item owner-info">
+                                        <div class="info-icon" aria-hidden="true">
+                                            <i class="bi bi-building"></i>
+                                        </div>
+                                        <div class="info-content">
+                                            <label>Data Owner</label>
+                                            <span>${owner}</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="info-item topic-info">
+                                        <div class="info-icon" aria-hidden="true">
+                                            <i class="bi bi-tag"></i>
+                                        </div>
+                                        <div class="info-content">
+                                            <label>Topic</label>
+                                            <span class="topic-badge">${dataset.topic || 'General'}</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="info-item format-info">
+                                        <div class="info-icon" aria-hidden="true">
+                                            <i class="bi bi-file-earmark"></i>
+                                        </div>
+                                        <div class="info-content">
+                                            <label>Format</label>
+                                            <span class="format-badge">${dataset.data_type || 'Unknown'}</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="info-item icon-info">
+                                        <div class="topic-icon" aria-hidden="true">
+                                            <i class="${topicIcon}"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <footer class="dataset-actions">
+                                <a href="/dataset/${dataset.id}" class="view-details-btn" aria-label="View details for dataset ${dataset.id}">
+                                    <i class="bi bi-arrow-right" aria-hidden="true"></i>
+                                    <span>View Dataset Details</span>
+                                </a>
+                            </footer>
+                        </article>
+                    `;
+                });
+                
+                datasetsHTML += '</div></div>';
+                relevantDatasets.innerHTML = datasetsHTML;
+            } else {
+                relevantDatasets.innerHTML = `
+                    <div class="no-results" role="status">
+                        <h3>No specific datasets found</h3>
+                        <p>Try rephrasing your question or use the filters below to browse available datasets.</p>
+                    </div>
+                `;
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            aiResponse.innerHTML = `
+                <div class="error-message" role="alert">
+                    <h3>Error</h3>
+                    <p>Sorry, there was an error processing your request. Please try again.</p>
+                </div>
+            `;
+        });
+    }
+    
+    // Function to get appropriate icon based on topic
+    function getTopicIcon(topic) {
+        if (!topic) return 'bi bi-tag';
+        
+        const topicLower = topic.toLowerCase();
+        if (topicLower.includes('education') || topicLower.includes('school')) return 'bi bi-mortarboard';
+        if (topicLower.includes('health') || topicLower.includes('medical')) return 'bi bi-heart-pulse';
+        if (topicLower.includes('environment') || topicLower.includes('climate')) return 'bi bi-tree';
+        if (topicLower.includes('transport') || topicLower.includes('traffic')) return 'bi bi-truck';
+        if (topicLower.includes('economy') || topicLower.includes('financial')) return 'bi bi-graph-up';
+        if (topicLower.includes('demographics') || topicLower.includes('population')) return 'bi bi-people';
+        if (topicLower.includes('crime') || topicLower.includes('justice')) return 'bi bi-shield-check';
+        if (topicLower.includes('housing') || topicLower.includes('property')) return 'bi bi-house';
+        if (topicLower.includes('employment') || topicLower.includes('jobs')) return 'bi bi-briefcase';
+        if (topicLower.includes('technology') || topicLower.includes('digital')) return 'bi bi-laptop';
+        
+        return 'bi bi-tag'; // Default icon
+    }
+    
+    // Function to format AI response for better readability
+    function formatAIResponse(response) {
+        if (!response) return '<p class="text-muted">No response available</p>';
+        
+        // Split response into paragraphs
+        const paragraphs = response.split('\n\n').filter(p => p.trim());
+        
+        if (paragraphs.length === 1) {
+            // Single paragraph
+            return `<p class="mb-0 fs-6">${response}</p>`;
+        } else {
+            // Multiple paragraphs
+            let formattedHTML = '';
+            paragraphs.forEach((paragraph, index) => {
+                if (paragraph.trim()) {
+                    const isLast = index === paragraphs.length - 1;
+                    formattedHTML += `<p class="mb-${isLast ? '0' : '3'} fs-6">${paragraph.trim()}</p>`;
+                }
+            });
+            return formattedHTML;
+        }
+    }
+    
+    // Close AI results
+    function closeResults() {
+        const aiResults = document.getElementById('aiResults');
+        if (aiResults) {
+            aiResults.style.display = 'none';
+        }
+    }
+    
+    // Clear all filters
+    function clearFilters() {
+        document.getElementById('searchInput').value = '';
+        document.getElementById('ownerFilter').value = '';
+        document.getElementById('topicFilter').value = '';
+        document.getElementById('dataTypeFilter').value = '';
+        document.getElementById('yearFilter').value = '';
+        
+        // Reset search
+        performSearch();
+    }
+    
+    // Voice Search functionality
+    let recognition = null;
+    let isListening = false;
+    
+    // Initialize speech recognition
+    function initSpeechRecognition() {
+        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+            recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+            recognition.continuous = false;
+            recognition.interimResults = true; // Enable interim results to detect speech end
+            recognition.lang = 'en-AU';
+            
+            // Auto-stop timer
+            let speechTimeout = null;
+            
+            recognition.onstart = function() {
+                isListening = true;
+                updateVoiceButtonState();
+                updateVoiceStatus('Listening... Speak now!', 'listening');
+                
+                // Start auto-stop timer (5 seconds of silence)
+                speechTimeout = setTimeout(() => {
+                    if (isListening) {
+                        recognition.stop();
+                    }
+                }, 5000);
+            };
+            
+            recognition.onresult = function(event) {
+                // Clear the auto-stop timer when we get results
+                if (speechTimeout) {
+                    clearTimeout(speechTimeout);
+                    speechTimeout = null;
+                }
+                
+                // Check if this is the final result
+                if (event.results[event.results.length - 1].isFinal) {
+                    const transcript = event.results[event.results.length - 1][0].transcript;
+                    document.getElementById('heroSearch').value = transcript;
+                    updateVoiceStatus('Voice input received: ' + transcript, 'success');
+                    
+                    // Show processing status
+                    updateVoiceStatus('Processing speech...', 'processing');
+                    
+                    // Auto-stop after getting final result
+                    setTimeout(() => {
+                        if (isListening) {
+                            recognition.stop();
+                        }
+                    }, 1000); // Wait 1 second then stop
+                    
+                    // Automatically trigger AI search after voice input
+                    setTimeout(() => {
+                        updateVoiceStatus('Starting AI search...', 'searching');
+                        performHeroSearch();
+                    }, 1500); // Wait 1.5 seconds then start search
+                    
+                    setTimeout(() => {
+                        updateVoiceStatus('', '');
+                    }, 4000);
+                } else {
+                    // Show interim results
+                    const interimTranscript = event.results[event.results.length - 1][0].transcript;
+                    updateVoiceStatus('Listening: ' + interimTranscript, 'listening');
+                }
+            };
+            
+            recognition.onerror = function(event) {
+                console.error('Speech recognition error:', event.error);
+                updateVoiceStatus('Error: ' + event.error, 'error');
+                
+                // Clear timeout on error
+                if (speechTimeout) {
+                    clearTimeout(speechTimeout);
+                    speechTimeout = null;
+                }
+                
+                setTimeout(() => {
+                    updateVoiceStatus('', '');
+                }, 3000);
+            };
+            
+            recognition.onend = function() {
+                isListening = false;
+                updateVoiceButtonState();
+                
+                // Clear timeout when ending
+                if (speechTimeout) {
+                    clearTimeout(speechTimeout);
+                    speechTimeout = null;
+                }
+                
+                updateVoiceStatus('Voice recognition ended', 'ended');
+                setTimeout(() => {
+                    updateVoiceStatus('', '');
+                }, 2000);
+            };
+        } else {
+            console.warn('Speech recognition not supported in this browser');
+            updateVoiceStatus('Voice search not supported in this browser', 'error');
+        }
+    }
+    
+    // Start voice search
+    function startVoiceSearch() {
+        if (!recognition) {
+            initSpeechRecognition();
+        }
+        
+        if (recognition && !isListening) {
+            try {
+                recognition.start();
+            } catch (error) {
+                console.error('Error starting speech recognition:', error);
+                updateVoiceStatus('Error starting voice recognition', 'error');
+            }
+        } else if (isListening) {
+            recognition.stop();
+        }
+        }
+    
+    // Update voice button state
+    function updateVoiceButtonState() {
+        const voiceBtn = document.getElementById('voiceSearchBtn');
+        if (voiceBtn) {
+            if (isListening) {
+                voiceBtn.classList.add('listening');
+                voiceBtn.setAttribute('aria-pressed', 'true');
+                voiceBtn.innerHTML = '<i class="bi bi-mic-mute" aria-hidden="true"></i><span>Stop</span>';
+            } else {
+                voiceBtn.classList.remove('listening');
+                voiceBtn.setAttribute('aria-pressed', 'false');
+                voiceBtn.innerHTML = '<i class="bi bi-mic" aria-hidden="true"></i><span>Voice</span>';
+            }
+        }
+    }
+    
+    // Update voice status display
+    function updateVoiceStatus(message, type) {
+        const voiceStatus = document.getElementById('voiceStatus');
+        const voiceStatusText = document.getElementById('voiceStatusText');
+        
+        if (voiceStatus && voiceStatusText) {
+            if (message) {
+                voiceStatus.style.display = 'block';
+                voiceStatus.textContent = message;
+                voiceStatus.className = `voice-status ${type}`;
+            } else {
+                voiceStatus.style.display = 'none';
+            }
+        }
+    }
+    
+    // Initialize view mode and voice search when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+        initViewMode();
+        initSpeechRecognition();
+    });
+    
+    // Initialize view mode from localStorage or default to grid
+    function initViewMode() {
+        const savedMode = localStorage.getItem('viewMode') || 'grid';
+        setViewMode(savedMode);
+        
+        // Update button states to match saved mode
+        const buttons = document.querySelectorAll('.view-button');
+        buttons.forEach(btn => {
+            btn.classList.remove('active');
+            btn.setAttribute('aria-pressed', 'false');
+        });
+        
+        const activeButton = document.querySelector(`[onclick="setViewMode('${savedMode}')"]`);
+        if (activeButton) {
+            activeButton.classList.add('active');
+            activeButton.setAttribute('aria-pressed', 'true');
+        }
+    }
+</script>
+{% endblock %}
